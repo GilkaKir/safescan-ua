@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   if (!apiKey) {
     return res.status(500).json({
       error: true,
-      message: 'ANTHROPIC_API_KEY не знайдено. Додайте змінну у Vercel Settings → Environment Variables'
+      message: 'ANTHROPIC_API_KEY не знайдено.'
     });
   }
 
