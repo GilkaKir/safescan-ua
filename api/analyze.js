@@ -1,7 +1,3 @@
-// api/analyze.js — Vercel Serverless Function
-// CommonJS формат для максимальної сумісності
-
-JavaScript
 export const config = {
   api: {
     bodyParser: {
@@ -33,7 +29,7 @@ export default async function handler(req, res) {
     });
   }
 
-  // Парсинг тіла запиту (Vercel автоматично парсить JSON)
+  // Парсинг тіла запиту
   let body = req.body;
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch(e) {
@@ -73,4 +69,4 @@ export default async function handler(req, res) {
       message: `Server error: ${err.message}`
     });
   }
-};
+}
