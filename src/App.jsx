@@ -854,17 +854,47 @@ export default function App() {
 
   const STEPS = ["Зчитую фото…","Аналізую склад…","Перевіряю критерії…","Готую результат…"];
 
-  const readImg = useCallback((file, setter) => {
+const readImg = useCallback((file, setter) => {
     if (!file || !file.type.startsWith("image/")) return;
+    
+    // Створюємо URL для показу прев'ю в інтерфейсі
     const src = URL.createObjectURL(file);
-    const reader = new FileReader();
-    reader.onload = e => {
-      const b64 = e.target.result.split(",")[1];
-      setter({src, b64, mime: file.type});
-    };
-    reader.readAsDataURL(file);
-  }, []);
+    
+    // Створюємо об'єкт зображення для стиснення
+    const img = new Image();
+    img.onload = () => {
+      // Створюємо невидиме полотно (canvas)
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
 
+      // Максимальний розмір сторони (1200px вистачає для ШІ з головою)
+      const MAX_SIZE = 1200;
+      
+      if (width > height && width > MAX_SIZE) {
+        height *= MAX_SIZE / width;
+        width = MAX_SIZE;
+      } else if (height > MAX_SIZE) {
+        width *= MAX_SIZE / height;
+        height = MAX_SIZE;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Малюємо зменшене зображення на canvas
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Конвертуємо canvas назад у Base64 (формат JPEG, якість 70%)
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+      const b64 = dataUrl.split(",")[1];
+
+      // Зберігаємо стиснене фото
+      setter({src, b64, mime: "image/jpeg"});
+    };
+    img.src = src;
+  }, []);
   const analyze = async () => {
     if (!img1.b64) return;
     setPhase("loading");
