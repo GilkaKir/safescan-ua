@@ -909,13 +909,14 @@ const readImg = useCallback((file, setter) => {
       }
       content.push({type:"text", text:`Перше фото — товар/бренд.${img2.b64?" Друге — склад/інгредієнти.":""} Проаналізуй.`});
 
-const reqBody = {
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 4096,
+ const reqBody = {
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 8192,
         system: makePrompt(enabled),
         tools: [{type:"web_search_20250305", name:"web_search"}],
         messages: [{role:"user", content}]
       };
+
       const bodyStr = JSON.stringify(reqBody);
       const kb = Math.round(bodyStr.length / 1024);
       console.log(`Request size: ~${kb}KB, max_tokens: ${reqBody.max_tokens}`);
