@@ -909,8 +909,8 @@ const readImg = useCallback((file, setter) => {
       }
       content.push({type:"text", text:`Перше фото — товар/бренд.${img2.b64?" Друге — склад/інгредієнти.":""} Проаналізуй.`});
 
-      const reqBody = {
-        model: "claude-sonnet-4-20250514",
+const reqBody = {
+        model: "claude-3-7-sonnet-20250219",
         max_tokens: 8192,
         system: makePrompt(enabled),
         tools: [{type:"web_search_20250305", name:"web_search"}],
@@ -930,9 +930,9 @@ const readImg = useCallback((file, setter) => {
 
       clearInterval(timer);
 
-      if (!res.ok) {
+ if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(`HTTP ${res.status}: ${e?.error?.message || res.statusText}`);
+        throw new Error(`HTTP ${res.status}: ${e?.message || res.statusText}`);
       }
 
       const data = await res.json();
