@@ -1,3 +1,22 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <meta name="theme-color" content="#08090c"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <title>SafeScan UA</title>
+  <style>*{box-sizing:border-box}body{margin:0;padding:0;background:#08090c}</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" data-presets="react">
+const { useState, useRef, useCallback, useEffect } = React;
+
 import { useState, useRef, useCallback, useEffect } from "react";
 
 /* ── palette ── */
@@ -823,7 +842,7 @@ function Disclaimer({onAccept}) {
 }
 
 /* ── Main App ── */
-export default function App() {
+function App() {
   // auth: welcome | email | otp | register | app
   const [authPhase, setAuthPhase] = useState("welcome");
   const [authEmail, setAuthEmail] = useState("");
@@ -854,47 +873,17 @@ export default function App() {
 
   const STEPS = ["Зчитую фото…","Аналізую склад…","Перевіряю критерії…","Готую результат…"];
 
-const readImg = useCallback((file, setter) => {
+  const readImg = useCallback((file, setter) => {
     if (!file || !file.type.startsWith("image/")) return;
-    
-    // Створюємо URL для показу прев'ю в інтерфейсі
     const src = URL.createObjectURL(file);
-    
-    // Створюємо об'єкт зображення для стиснення
-    const img = new Image();
-    img.onload = () => {
-      // Створюємо невидиме полотно (canvas)
-      const canvas = document.createElement("canvas");
-      let width = img.width;
-      let height = img.height;
-
-      // Максимальний розмір сторони (1200px вистачає для ШІ з головою)
-      const MAX_SIZE = 1200;
-      
-      if (width > height && width > MAX_SIZE) {
-        height *= MAX_SIZE / width;
-        width = MAX_SIZE;
-      } else if (height > MAX_SIZE) {
-        width *= MAX_SIZE / height;
-        height = MAX_SIZE;
-      }
-
-      canvas.width = width;
-      canvas.height = height;
-      
-      // Малюємо зменшене зображення на canvas
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // Конвертуємо canvas назад у Base64 (формат JPEG, якість 70%)
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-      const b64 = dataUrl.split(",")[1];
-
-      // Зберігаємо стиснене фото
-      setter({src, b64, mime: "image/jpeg"});
+    const reader = new FileReader();
+    reader.onload = e => {
+      const b64 = e.target.result.split(",")[1];
+      setter({src, b64, mime: file.type});
     };
-    img.src = src;
+    reader.readAsDataURL(file);
   }, []);
+
   const analyze = async () => {
     if (!img1.b64) return;
     setPhase("loading");
@@ -909,14 +898,13 @@ const readImg = useCallback((file, setter) => {
       }
       content.push({type:"text", text:`Перше фото — товар/бренд.${img2.b64?" Друге — склад/інгредієнти.":""} Проаналізуй.`});
 
- const reqBody = {
+      const reqBody = {
         model: "claude-sonnet-4-20250514",
         max_tokens: 8192,
         system: makePrompt(enabled),
         tools: [{type:"web_search_20250305", name:"web_search"}],
         messages: [{role:"user", content}]
       };
-
       const bodyStr = JSON.stringify(reqBody);
       const kb = Math.round(bodyStr.length / 1024);
       console.log(`Request size: ~${kb}KB, max_tokens: ${reqBody.max_tokens}`);
@@ -931,9 +919,9 @@ const readImg = useCallback((file, setter) => {
 
       clearInterval(timer);
 
- if (!res.ok) {
+      if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(`HTTP ${res.status}: ${e?.message || res.statusText}`);
+        throw new Error(`HTTP ${res.status}: ${e?.error?.message || res.statusText}`);
       }
 
       const data = await res.json();
@@ -1429,3 +1417,11 @@ function BtnSecondary({children, onClick}) {
       justifyContent:"center", gap:8, marginBottom:8}}>{children}</button>
   );
 }
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  React.createElement(App)
+);
+  </script>
+</body>
+</html>
