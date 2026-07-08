@@ -1,4 +1,3 @@
-JSON
 {
   "functions": {
     "api/analyze.js": {
@@ -7,6 +6,9 @@ JSON
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }
