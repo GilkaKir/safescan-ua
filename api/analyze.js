@@ -1,12 +1,7 @@
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '4mb',
-    },
-  },
-};
+// api/analyze.js — Vercel Serverless Function
+// CommonJS формат для максимальної сумісності
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -25,11 +20,11 @@ export default async function handler(req, res) {
   if (!apiKey) {
     return res.status(500).json({
       error: true,
-      message: 'ANTHROPIC_API_KEY не знайдено.'
+      message: 'ANTHROPIC_API_KEY не знайдено. Додайте змінну у Vercel Settings → Environment Variables'
     });
   }
 
-  // Парсинг тіла запиту
+  // Парсинг тіла запиту (Vercel автоматично парсить JSON)
   let body = req.body;
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch(e) {
@@ -69,4 +64,4 @@ export default async function handler(req, res) {
       message: `Server error: ${err.message}`
     });
   }
-}
+};
