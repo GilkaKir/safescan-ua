@@ -910,8 +910,9 @@ const readImg = useCallback((file, setter) => {
       content.push({type:"text", text:`Перше фото — товар/бренд.${img2.b64?" Друге — склад/інгредієнти.":""} Проаналізуй.`});
 
 const reqBody = {
-model: "claude-3-5-sonnet-20240620",
-max_tokens: 4096,
+  // Змінюємо модель на доступну (наприклад, Haiku, як порадив Клод)
+  model: "claude-haiku-4-5-20251001", // Або "claude-3-5-haiku-20241022", якщо перша не спрацює
+  max_tokens: 4096,
   system: makePrompt(enabled),
   messages: [{role:"user", content}] // Без tools
 };
