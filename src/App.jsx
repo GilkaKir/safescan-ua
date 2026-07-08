@@ -910,8 +910,8 @@ const readImg = useCallback((file, setter) => {
       content.push({type:"text", text:`Перше фото — товар/бренд.${img2.b64?" Друге — склад/інгредієнти.":""} Проаналізуй.`});
 
 const reqBody = {
-  model: "claude-3-5-sonnet-20241022",
-  max_tokens: 8192,
+model: "claude-3-5-sonnet-20240620",
+max_tokens: 4096,
   system: makePrompt(enabled),
   messages: [{role:"user", content}] // Без tools
 };
